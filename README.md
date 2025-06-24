@@ -36,7 +36,7 @@ Screenshots
 
 ![Home Screenshot](./screenshots/home_Screenshot.png)
 ![Settings Screenshot](./screenshots/settings_Screenshot.png)
-(screenshots/faq_Screenshot.png)
+./screenshots/faq_Screenshot.png
 
 ---
 
