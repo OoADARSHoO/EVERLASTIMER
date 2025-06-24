@@ -33,10 +33,10 @@ We often lose track of how fast the year flies by. EVERLASTIMER gives you a cons
 ---
 
 Screenshots
+![home_Screenshot](https://github.com/user-attachments/assets/8bf52fe1-d005-4c84-b2a2-f1d549d2eb93)
+![settings_Screenshot](https://github.com/user-attachments/assets/2db1b2a4-7f90-4b0c-96d9-b2df29a12746)
+![faq_Screenshot](https://github.com/user-attachments/assets/a8b6dd7f-c134-4a9a-aaa1-ba11264045fa)
 
-(screenshots/home_Screenshot.png)
-(screenshots/settings_Screenshot.png)
-(screenshots/faq_Screenshot.png)
 
 ---
 
@@ -59,11 +59,7 @@ Roadmap
 
 ---
 
-License
 
-This project is currently **closed-source for learning and testing purposes.** Distribution not allowed without permission.
-
----
 
 © 2025 Bitekoi Labs
 
