@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+env/
+venv/                  # Ignore virtual environments
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+
+# PyInstaller
+build/                 # PyInstaller build folder
+dist/                  # PyInstaller distribution folder (where .exe is)
+*.spec                 # PyInstaller spec file
+
+# IDE (e.g., PyCharm, VS Code)
+.idea/                 # PyCharm project files
+*.iml                  # PyCharm module files
+.vscode/               # VS Code configuration
+*.[Pp]roject           # Visual Studio Code project files
+*.sublime-project      # Sublime Text project files
+*.sublime-workspace    # Sublime Text workspace files
+
+# Operating System
+.DS_Store              # macOS
+Thumbs.db              # Windows
