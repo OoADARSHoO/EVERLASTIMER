@@ -4,7 +4,7 @@ AppVersion={#MyAppVersion}
 DefaultDirName={autopf}\Everlastimer
 DefaultGroupName=Everlastimer
 OutputBaseFilename=Everlastimer-setup-{#MyAppVersion}
-OutputDir=.
+OutputDir=Output
 Compression=lzma2
 SolidCompression=yes
 

@@ -6,7 +6,7 @@ Use this pattern in your separate GitHub Pages repository so the Download button
 <a id="download-link" href="#">Download Everlastimer</a>
 <script>
   async function getLatestRelease() {
-    const response = await fetch('https://api.github.com/repos/<YOUR_USER>/<YOUR_REPO>/releases/latest');
+    const response = await fetch('https://api.github.com/repos/OoADARSHoO/EVERLASTIMER/releases/latest');
     const data = await response.json();
     const asset = data.assets.find((item) => item.name.endsWith('.exe'));
     return asset ? asset.browser_download_url : null;
