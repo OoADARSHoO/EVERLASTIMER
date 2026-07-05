@@ -40,6 +40,23 @@ jobs:
         working-directory: app
         run: flutter config --enable-windows-desktop
 
+      - name: Patch Flutter VS detection for GitHub Actions
+        shell: pwsh
+        run: |
+          $old = "'Visual Studio 16 2019'"
+          $new = "'Visual Studio 17 2022'"
+          $file = "$env:FLUTTER_ROOT\packages\flutter_tools\lib\src\windows\visual_studio.dart"
+          $content = Get-Content $file -Raw
+          if ($content -match $old) {
+            $content = $content -replace $old, $new
+            Set-Content $file $content
+            Remove-Item "$env:FLUTTER_ROOT\bin\cache\flutter_tools.snapshot" -Force -ErrorAction SilentlyContinue
+            Write-Host "Patched Flutter cmakeGenerator default to VS 2022; snapshot invalidated."
+          } else {
+            Write-Host "WARNING: Pattern not found in $file. Flutter version may have changed."
+            exit 1
+          }
+
       - name: Install Flutter dependencies
         working-directory: app
         run: flutter pub get
