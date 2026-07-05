@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>EverlastimerWidget</AssemblyName>
+    <RootNamespace>EverlastimerWidget</RootNamespace>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <!-- Self-contained publish is desired, but single-file bundling can fail
+         on some Windows setups when the output EXE is locked by file mapping.
+         Publish as a normal self-contained folder instead. -->
+    <PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <StartupObject>EverlastimerWidget.App</StartupObject>
+  </PropertyGroup>
+
+</Project>

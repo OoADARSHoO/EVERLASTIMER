@@ -28,3 +28,6 @@ artifacts/
 *.zip
 *.exe
 *.msi
+
+# Installer output
+installer/Output/
