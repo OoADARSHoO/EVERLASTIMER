@@ -1,0 +1,95 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (for example v1.2.3)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.5'
+          channel: stable
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y
+
+      - name: Enable Windows desktop support
+        working-directory: app
+        run: flutter config --enable-windows-desktop
+
+      - name: Install Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build Flutter Windows app
+        working-directory: app
+        run: flutter build windows --release
+
+      - name: Publish WPF widget
+        working-directory: widget
+        run: dotnet publish EverlastimerWidget.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false
+
+      - name: Prepare release artifacts
+        id: release-info
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = "${{ github.ref_name }}"
+          }
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = "dev"
+          }
+
+          $artifactDir = Join-Path $PWD "artifacts"
+          New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
+
+          Copy-Item "app/build/windows/x64/runner/Release/*" "$artifactDir\" -Recurse -Force
+          Copy-Item "widget/bin/Release/net8.0-windows/win-x64/publish/*" "$artifactDir\widget\" -Recurse -Force
+
+          $zipPath = "Everlastimer-$version-win.zip"
+          Compress-Archive -Path "$artifactDir\*" -DestinationPath $zipPath -Force
+
+          & iscc installer/everlastimer.iss /DMyAppVersion=$version /DSourceDir=$artifactDir
+
+          $installerPath = Join-Path $PWD "installer\Output\Everlastimer-setup-$version.exe"
+          if (-not (Test-Path $installerPath)) {
+            throw "Installer was not created: $installerPath"
+          }
+
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "installer=$installerPath" >> $env:GITHUB_OUTPUT
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release-info.outputs.version }}
+          name: Everlastimer ${{ steps.release-info.outputs.version }}
+          files: |
+            Everlastimer-${{ steps.release-info.outputs.version }}-win.zip
+            installer/Output/Everlastimer-setup-${{ steps.release-info.outputs.version }}.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

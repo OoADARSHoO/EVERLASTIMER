@@ -1,0 +1,30 @@
+# General
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+# Flutter
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/build/
+app/.idea/
+app/.vscode/
+app/coverage/
+app/.packages
+
+# .NET / WPF
+widget/bin/
+widget/obj/
+widget/.vs/
+widget/.idea/
+widget/*.user
+widget/*.suo
+
+# Release artifacts
+artifacts/
+*.zip
+*.exe
+*.msi
