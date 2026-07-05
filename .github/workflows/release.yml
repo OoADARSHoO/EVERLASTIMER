@@ -79,10 +79,13 @@ jobs:
           }
 
           $artifactDir = Join-Path $PWD "artifacts"
+          $widgetDir   = Join-Path $artifactDir "widget"
           New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
+          if (Test-Path $widgetDir -PathType Leaf) { Remove-Item $widgetDir -Force }
+          New-Item -ItemType Directory -Force -Path $widgetDir | Out-Null
 
-          Copy-Item "app/build/windows/x64/runner/Release/*" "$artifactDir\" -Recurse -Force
-          Copy-Item "widget/bin/Release/net8.0-windows/win-x64/publish/*" "$artifactDir\widget\" -Recurse -Force
+          Copy-Item "app/build/windows/x64/runner/Release/*" $artifactDir -Recurse -Force
+          Copy-Item "widget/bin/Release/net8.0-windows/win-x64/publish/*" $widgetDir -Recurse -Force
 
           $zipPath = "Everlastimer-$version-win.zip"
           Compress-Archive -Path "$artifactDir\*" -DestinationPath $zipPath -Force
