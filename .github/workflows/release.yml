@@ -8,7 +8,7 @@ on:
     inputs:
       version:
         description: 'Release version (for example v1.2.3)'
-        required: false
+        required: true
 
 permissions:
   contents: write
@@ -59,9 +59,6 @@ jobs:
           $version = "${{ github.event.inputs.version }}"
           if ([string]::IsNullOrWhiteSpace($version)) {
             $version = "${{ github.ref_name }}"
-          }
-          if ([string]::IsNullOrWhiteSpace($version)) {
-            $version = "dev"
           }
 
           $artifactDir = Join-Path $PWD "artifacts"
