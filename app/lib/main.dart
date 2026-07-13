@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'core/app_tab.dart';
 import 'core/app_theme.dart';
@@ -12,6 +13,10 @@ import 'widgets/app_sidebar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://ujfbihyjvxaxbpvholee.supabase.co',
+    publishableKey: 'sb_publishable_-RVAdYtvbCwP_qZWr0YbAg_CYVGg9Mm',
+  );
   await windowManager.ensureInitialized();
 
   const WindowOptions windowOptions = WindowOptions(

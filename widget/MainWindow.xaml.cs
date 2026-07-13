@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
+using EverlastimerWidget.Services;
 
 namespace EverlastimerWidget;
 
@@ -25,14 +27,17 @@ public partial class MainWindow : Window
 
         _timer = new DispatcherTimer
         {
-            // Matches the Flutter app's one-minute tick — plenty of
-            // resolution for something that moves this slowly.
             Interval = TimeSpan.FromMinutes(1)
         };
         _timer.Tick += (_, _) => Refresh();
         _timer.Start();
 
         Loaded += (_, _) => Refresh();
+
+        SupabaseService.Instance.SupportStatsChanged += (_, stats) =>
+        {
+            Dispatcher.Invoke(() => ApplySupportStats(stats));
+        };
     }
 
     private void NormalizeWindowPlacement()
@@ -75,7 +80,7 @@ public partial class MainWindow : Window
         PinButton.Content = _settings.Locked ? "\uD83D\uDD12" : "\uD83D\uDCCC"; // lock vs pin glyph
     }
 
-    private void Refresh()
+    private async void Refresh()
     {
         var yp = YearProgress.FromNow();
 
@@ -84,21 +89,33 @@ public partial class MainWindow : Window
         DaysCompletedText.Text = yp.DaysCompleted.ToString();
         DaysRemainingText.Text = yp.DaysRemaining.ToString();
 
-        MonthValueText.Text = yp.CurrentMonth.ToString();
-        MonthSuffixText.Text = "of 12";
-
-        WeekValueText.Text = yp.CurrentWeek.ToString();
-        WeekSuffixText.Text = $"of {yp.TotalWeeksInYear}";
-
-        DayValueText.Text = yp.CurrentDayOfYear.ToString();
-        DaySuffixText.Text = $"of {yp.TotalDaysInYear}";
-
-        HourValueText.Text = yp.HoursCompleted.ToString("N0");
-        HourSuffixText.Text = $"of {yp.TotalHoursInYear:N0}";
-
         UpdatedText.Text = $"Updated {DateTime.Now:h:mm tt}";
 
         RingControl.Fraction = yp.Fraction;
+
+        try
+        {
+            var stats = await SupabaseService.Instance.GetSupportStatsAsync();
+            ApplySupportStats(stats);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to fetch support stats: {ex.Message}");
+        }
+    }
+
+    private void ApplySupportStats(SupportStats? stats)
+    {
+        if (stats is null) return;
+
+        SupportBudgetText.Text = stats.Budget?.ToString("N0") ?? "--";
+        SupportRaisedText.Text = stats.Received?.ToString("N0") ?? "--";
+        SupportHostingText.Text = stats.Hosting?.ToString("N0") ?? "--";
+        SupportDatabaseText.Text = stats.Database?.ToString("N0") ?? "--";
+        SupportCdnText.Text = stats.Cdn?.ToString("N0") ?? "--";
+        SupportApisText.Text = stats.Apis?.ToString("N0") ?? "--";
+        SupportOtherText.Text = stats.Other?.ToString("N0") ?? "--";
+        UpdatedText.Text = $"Updated {DateTime.Now:h:mm tt}";
     }
 
     // --- Drag to move ---

@@ -10,75 +10,108 @@ class SupportScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(supportConfigProvider);
+    final configAsync = ref.watch(supportConfigProvider);
     final accent = ref.watch(appThemeProvider).accent;
     final now = DateTime.now();
     final monthLabel = _monthLabel(now);
 
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top bar
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: configAsync.when(
+        data: (config) => SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top bar
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Support',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Help keep Everlastimer running and improving.',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.5),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => ref.invalidate(supportConfigProvider),
+                    icon: const Icon(Icons.refresh_rounded, color: Colors.white60),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.more_vert_rounded, color: Colors.white60),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              _AppCostsCard(config: config, monthLabel: monthLabel, accent: accent),
+              const SizedBox(height: 16),
+              _DonateCard(donateUrl: config.donateUrl, accent: accent),
+              const SizedBox(height: 16),
+              _BreakdownCard(config: config, accent: accent),
+              const SizedBox(height: 20),
+
+              Center(
+                child: Text.rich(
+                  TextSpan(
                     children: [
-                      const Text(
-                        'Support',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Help keep Everlastimer running and improving.',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          fontSize: 14,
-                        ),
-                      ),
+                      const TextSpan(text: 'Thanks to everyone who supports Everlastimer. You\'re part of the journey. '),
+                      const TextSpan(text: '💜'),
                     ],
                   ),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications_none_rounded, color: Colors.white60),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(accent.color),
+          ),
+        ),
+        error: (err, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading support data: $err',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_vert_rounded, color: Colors.white60),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(supportConfigProvider),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent.color,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-
-            _AppCostsCard(config: config, monthLabel: monthLabel, accent: accent),
-            const SizedBox(height: 16),
-            _DonateCard(donateUrl: config.donateUrl, accent: accent),
-            const SizedBox(height: 16),
-            _BreakdownCard(config: config, accent: accent),
-            const SizedBox(height: 20),
-
-            Center(
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    const TextSpan(text: 'Thanks to everyone who supports Everlastimer. You\'re part of the journey. '),
-                    const TextSpan(text: '💜'),
-                  ],
-                ),
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
+          ),
         ),
       ),
     );

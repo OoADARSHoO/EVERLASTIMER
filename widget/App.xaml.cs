@@ -2,13 +2,20 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using EverlastimerWidget.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace EverlastimerWidget;
 
 public partial class App : Application
 {
+    private IConfiguration? _configuration;
+
     protected override void OnStartup(StartupEventArgs e)
     {
+        _configuration = BuildConfiguration();
+        SupabaseService.Initialize(_configuration);
+
         AppDomain.CurrentDomain.UnhandledException += (_, ex) =>
         {
             File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "startup-errors.log"), ex.ExceptionObject?.ToString() + Environment.NewLine + "---" + Environment.NewLine);
@@ -49,6 +56,16 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
+    }
+
+    private static IConfiguration BuildConfiguration()
+    {
+        var baseDirectory = AppContext.BaseDirectory;
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(baseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+
+        return builder.Build();
     }
 
     private static string GetExecutablePath()

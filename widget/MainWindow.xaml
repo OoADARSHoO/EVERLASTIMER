@@ -181,8 +181,12 @@
                         </Grid>
 
                         <Border Grid.Row="2" Background="#08FFFFFF" CornerRadius="16"
-                                BorderBrush="#0CFFFFFF" BorderThickness="1" Padding="20,16" Margin="0,0,0,16">
+                                BorderBrush="#0CFFFFFF" BorderThickness="1" Padding="20,14" Margin="0,0,0,16">
                             <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
@@ -190,33 +194,55 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="1" HorizontalAlignment="Left" Margin="0,6,0,6"/>
-                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="2" HorizontalAlignment="Left" Margin="0,6,0,6"/>
-                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="3" HorizontalAlignment="Left" Margin="0,6,0,6"/>
+                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Margin="0,6,0,6"/>
+                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" Margin="0,6,0,6"/>
+                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" Margin="0,6,0,6"/>
 
-                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="MONTH" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="MonthValueText" Text="7" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="MonthSuffixText" Text="of 12" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="BUDGET" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="SupportBudgetText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                                    <TextBlock x:Name="SupportBudgetSuffix" Text="budget" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="WEEK" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="WeekValueText" Text="27" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="WeekSuffixText" Text="of 53" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="RAISED" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="SupportRaisedText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                                    <TextBlock x:Name="SupportRaisedSuffix" Text="received" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="DAY" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="DayValueText" Text="186" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="DaySuffixText" Text="of 365" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="HOSTING" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="SupportHostingText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                                    <TextBlock x:Name="SupportHostingSuffix" Text="expense" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="HOUR" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="HourValueText" Text="4,459" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="HourSuffixText" Text="of 8,760" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="DATABASE" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="SupportDatabaseText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                                    <TextBlock x:Name="SupportDatabaseSuffix" Text="expense" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
                                 </StackPanel>
+
+                                <Border Grid.Row="1" Grid.ColumnSpan="4" Background="#04FFFFFF" CornerRadius="8" Margin="4,14,4,0" Padding="10,6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Text="CDN" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="SupportCdnText" Text="--" FontSize="11" Foreground="{StaticResource TextSecondary}" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Text="APIs" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="SupportApisText" Text="--" FontSize="11" Foreground="{StaticResource TextSecondary}" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Text="OTHER" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="SupportOtherText" Text="--" FontSize="11" Foreground="{StaticResource TextSecondary}" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
                             </Grid>
                         </Border>
 
