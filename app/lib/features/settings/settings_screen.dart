@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../core/floating_widget_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -80,9 +81,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Settings',
-              style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
+            GestureDetector(
+              onPanStart: (_) => windowManager.startDragging(),
+              behavior: HitTestBehavior.translucent,
+              child: const Text(
+                'Settings',
+                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
+              ),
             ),
             const SizedBox(height: 24),
 

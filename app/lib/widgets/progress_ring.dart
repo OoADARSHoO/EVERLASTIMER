@@ -107,24 +107,17 @@ class _ProgressRingPainter extends CustomPainter {
       ..shader = gradientShader
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth * 1.8
-      ..strokeCap = StrokeCap.butt
+      ..strokeCap = StrokeCap.round
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16);
     canvas.drawArc(rect, 0, sweepAngle, false, glowPaint);
 
-    // Sharp gradient arc on top — BUTT cap, no auto-rounding at start.
+    // Sharp gradient arc on top — round caps on both ends.
     final arcPaint = Paint()
       ..shader = gradientShader
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
+      ..strokeCap = StrokeCap.round;
     canvas.drawArc(rect, 0, sweepAngle, false, arcPaint);
-
-    // Manually add a round cap ONLY at the active/leading end of the arc.
-    final capCenter = Offset(
-      center.dx + radius * math.cos(sweepAngle),
-      center.dy + radius * math.sin(sweepAngle),
-    );
-    canvas.drawCircle(capCenter, strokeWidth / 2, Paint()..color = endColor);
 
     canvas.restore();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../core/app_theme.dart';
 import '../../core/support_config.dart';
 import '../../widgets/progress_ring.dart';
@@ -22,41 +23,41 @@ class SupportScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top bar
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Support',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
+              // Top bar — full-width drag region.
+              GestureDetector(
+                onPanStart: (_) => windowManager.startDragging(),
+                behavior: HitTestBehavior.translucent,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Support',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Help keep Everlastimer running and improving.',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            fontSize: 14,
+                          const SizedBox(height: 4),
+                          Text(
+                            'Help keep Everlastimer running and improving.',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.5),
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => ref.invalidate(supportConfigProvider),
-                    icon: const Icon(Icons.refresh_rounded, color: Colors.white60),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.more_vert_rounded, color: Colors.white60),
-                  ),
-                ],
+                    IconButton(
+                      onPressed: () => ref.invalidate(supportConfigProvider),
+                      icon: const Icon(Icons.refresh_rounded, color: Colors.white60),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../core/app_theme.dart';
 
 class ThemesScreen extends ConsumerWidget {
@@ -16,38 +17,42 @@ class ThemesScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Themes',
-                        style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Pick a preset, or build your own from scratch',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
-                      ),
-                    ],
+            GestureDetector(
+              onPanStart: (_) => windowManager.startDragging(),
+              behavior: HitTestBehavior.translucent,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Themes',
+                          style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Pick a preset, or build your own from scratch',
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => _showCreateThemeDialog(context, ref),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text('Create Theme'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.accent.color,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
+                  ElevatedButton.icon(
+                    onPressed: () => _showCreateThemeDialog(context, ref),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Create Theme'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.accent.color,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 28),
 

@@ -25,6 +25,7 @@ void main() async {
   );
 
   windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.setResizable(true);
     await windowManager.show();
     await windowManager.focus();
   });
@@ -73,20 +74,10 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Column(
+      body: Row(
         children: [
-          GestureDetector(
-            onPanStart: (_) => windowManager.startDragging(),
-            child: Container(height: 8, color: Colors.transparent),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                const AppSidebar(),
-                Expanded(child: content),
-              ],
-            ),
-          ),
+          const AppSidebar(),
+          Expanded(child: content),
         ],
       ),
     );

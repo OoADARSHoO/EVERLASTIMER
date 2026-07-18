@@ -55,7 +55,6 @@ class AppSidebar extends ConsumerWidget {
             const SizedBox(height: 6),
           ],
           const Spacer(),
-          _AccountTile(accent: accent, isCollapsed: isCollapsed),
         ],
       ),
     );
@@ -153,88 +152,3 @@ class _NavTile extends StatelessWidget {
   }
 }
 
-class _AccountTile extends StatelessWidget {
-  final Color accent;
-  final bool isCollapsed;
-
-  const _AccountTile({
-    required this.accent,
-    required this.isCollapsed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.fastOutSlowIn,
-      padding: EdgeInsets.symmetric(
-        horizontal: isCollapsed ? 10 : 12,
-        vertical: 10,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFF15131F),
-        borderRadius: BorderRadius.circular(isCollapsed ? 24 : 30),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: 14,
-            backgroundColor: accent,
-            child: const Text('E', style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          Flexible(
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.fastOutSlowIn,
-              alignment: Alignment.centerLeft,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 150),
-                opacity: isCollapsed ? 0.0 : 1.0,
-                curve: Curves.easeInOut,
-                child: SizedBox(
-                  width: isCollapsed ? 0 : 120,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: SizedBox(
-                      width: 120,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(width: 10),
-                          const Flexible(
-                            child: Text(
-                              'Everlast',
-                              maxLines: 1,
-                              overflow: TextOverflow.clip,
-                              style: TextStyle(color: Colors.white, fontSize: 13),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: accent,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              'Pro',
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          const Spacer(),
-                          const Icon(Icons.expand_more, color: Colors.white38, size: 18),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

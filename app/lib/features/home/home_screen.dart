@@ -52,42 +52,33 @@ class _HomeContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
         child: Column(
           children: [
-            // Top bar
-            Row(
-              children: [
-                const Text(
-                  'EVERLASTIMER',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 4,
+            // Top bar — full-width drag region, but buttons still work
+            // via translucent hit test.
+            GestureDetector(
+              onPanStart: (_) => windowManager.startDragging(),
+              behavior: HitTestBehavior.translucent,
+              child: Row(
+                children: [
+                  const Text(
+                    'EVERLASTIMER',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 4,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onPanStart: (_) => windowManager.startDragging(),
-                    behavior: HitTestBehavior.translucent,
-                    child: const SizedBox(height: 40),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => windowManager.minimize(),
+                    icon: const Icon(Icons.minimize_rounded, color: Colors.white60, size: 18),
                   ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications_none_rounded, color: Colors.white60),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_vert_rounded, color: Colors.white60),
-                ),
-                IconButton(
-                  onPressed: () => windowManager.minimize(),
-                  icon: const Icon(Icons.minimize_rounded, color: Colors.white60, size: 18),
-                ),
-                IconButton(
-                  onPressed: () => windowManager.close(),
-                  icon: const Icon(Icons.close_rounded, color: Colors.white60, size: 18),
-                ),
-              ],
+                  IconButton(
+                    onPressed: () => windowManager.close(),
+                    icon: const Icon(Icons.close_rounded, color: Colors.white60, size: 18),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
 
