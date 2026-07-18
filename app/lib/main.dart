@@ -9,7 +9,7 @@ import 'features/settings/settings_screen.dart';
 import 'features/support/support_screen.dart';
 import 'features/themes_gallery/themes_screen.dart';
 import 'features/widgets_gallery/widgets_screen.dart';
-import 'widgets/app_sidebar.dart';
+import 'widgets/app_sidebar.dart' show AppSidebar, sidebarCollapsedProvider;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,6 +63,7 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTab = ref.watch(selectedTabProvider);
     final backgroundColor = ref.watch(appThemeProvider).backgroundColor;
+    final isCollapsed = ref.watch(sidebarCollapsedProvider);
 
     final Widget content = switch (selectedTab) {
       AppTab.home => const HomeScreen(),
@@ -74,10 +75,57 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Row(
+      body: Column(
         children: [
-          const AppSidebar(),
-          Expanded(child: content),
+          // Global title bar — single drag region across the full window
+          // width. This avoids the dead zones that per-screen drag
+          // GestureDetectors had (they were inset by SafeArea padding).
+          GestureDetector(
+            onPanStart: (_) => windowManager.startDragging(),
+            behavior: HitTestBehavior.translucent,
+            child: Container(
+              height: 44,
+              color: Colors.transparent,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => ref.read(sidebarCollapsedProvider.notifier).update((state) => !state),
+                    icon: Icon(
+                      isCollapsed ? Icons.menu : Icons.menu_open,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Everlastimer',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => windowManager.minimize(),
+                    icon: const Icon(Icons.minimize_rounded, color: Colors.white60, size: 18),
+                  ),
+                  IconButton(
+                    onPressed: () => windowManager.close(),
+                    icon: const Icon(Icons.close_rounded, color: Colors.white60, size: 18),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                const AppSidebar(),
+                Expanded(child: content),
+              ],
+            ),
+          ),
         ],
       ),
     );

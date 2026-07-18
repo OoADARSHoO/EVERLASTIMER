@@ -35,14 +35,6 @@ class AppSidebar extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IconButton(
-            onPressed: () => ref.read(sidebarCollapsedProvider.notifier).update((state) => !state),
-            icon: Icon(
-              isCollapsed ? Icons.menu : Icons.menu_open,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 24),
           for (final item in _items) ...[
             _NavTile(
               icon: item.icon,

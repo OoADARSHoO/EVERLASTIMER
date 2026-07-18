@@ -62,44 +62,28 @@ class _ProgressRingPainter extends CustomPainter {
     final radius = (math.min(size.width, size.height) - strokeWidth) / 2;
     final rect = Rect.fromCircle(center: center, radius: radius);
 
-    // Background track — full dim circle.
+    // Background track — full dim circle drawn as a circle (not arc) to
+    // avoid any seam from overlapping round caps at the 0/2π boundary.
     final trackPaint = Paint()
       ..color = _trackColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(rect, 0, 2 * math.pi, false, trackPaint);
+      ..strokeCap = StrokeCap.butt;
+    canvas.drawCircle(center, radius, trackPaint);
 
     if (progress <= 0) return;
 
+    const startAngle = -math.pi / 2; // 12 o'clock
     final sweepAngle = 2 * math.pi * progress;
-    // Start at the top (12 o'clock = -90deg) and sweep clockwise.
-    const startAngle = -math.pi / 2;
 
-    // Rotate the canvas itself so the arc we draw always starts at local
-    // angle 0 (3 o'clock). This sidesteps any ambiguity in how
-    // GradientRotation composes with the SweepGradient's own angle frame
-    // — after this rotation, "angle 0 in local space" IS "12 o'clock,
-    // clockwise" in screen space, and a plain SweepGradient with
-    // startAngle: 0 lines up with it exactly, every time, with no
-    // separate rotation transform needed.
-    canvas.save();
-    canvas.translate(center.dx, center.dy);
-    canvas.rotate(startAngle);
-    canvas.translate(-center.dx, -center.dy);
-
-    // Gradient defined in this rotated local space: 0.0 -> startColor at
-    // local angle 0 (which is now screen-12-o'clock), fading to endColor
-    // at local angle == sweepAngle (the visible end of the arc), then
-    // holding flat at endColor beyond that (irrelevant since drawArc
-    // below only paints up to sweepAngle).
-    final localProgressAngle = sweepAngle / (2 * math.pi);
+    // Gradient sweeps from startAngle clockwise for a full circle so the
+    // transition from startColor → endColor lands exactly at [progress].
     final gradientShader = SweepGradient(
       center: Alignment.center,
-      startAngle: 0.0,
-      endAngle: 2 * math.pi,
+      startAngle: startAngle,
+      endAngle: startAngle + 2 * math.pi,
       colors: [startColor, endColor, endColor],
-      stops: [0.0, localProgressAngle, localProgressAngle],
+      stops: [0.0, progress, progress],
     ).createShader(rect);
 
     // Soft glow pass: wider, blurred stroke underneath the sharp arc.
@@ -109,7 +93,7 @@ class _ProgressRingPainter extends CustomPainter {
       ..strokeWidth = strokeWidth * 1.8
       ..strokeCap = StrokeCap.round
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16);
-    canvas.drawArc(rect, 0, sweepAngle, false, glowPaint);
+    canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint);
 
     // Sharp gradient arc on top — round caps on both ends.
     final arcPaint = Paint()
@@ -117,9 +101,7 @@ class _ProgressRingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
-    canvas.drawArc(rect, 0, sweepAngle, false, arcPaint);
-
-    canvas.restore();
+    canvas.drawArc(rect, startAngle, sweepAngle, false, arcPaint);
   }
 
   @override

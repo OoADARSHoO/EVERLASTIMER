@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:window_manager/window_manager.dart';
 import '../../core/app_theme.dart';
 import '../../core/home_widget_style.dart';
 import '../../core/year_progress.dart';
@@ -24,23 +23,19 @@ class WidgetsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onPanStart: (_) => windowManager.startDragging(),
-              behavior: HitTestBehavior.translucent,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Widgets',
-                    style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Choose how your year progress is displayed on the Home screen',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
-                  ),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Widgets',
+                  style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Choose how your year progress is displayed on the Home screen',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
 

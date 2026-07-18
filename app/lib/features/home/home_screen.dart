@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:window_manager/window_manager.dart';
 import '../../core/app_theme.dart';
 import '../../core/home_widget_style.dart';
 import '../../core/year_progress.dart';
@@ -52,32 +51,13 @@ class _HomeContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
         child: Column(
           children: [
-            // Top bar — full-width drag region, but buttons still work
-            // via translucent hit test.
-            GestureDetector(
-              onPanStart: (_) => windowManager.startDragging(),
-              behavior: HitTestBehavior.translucent,
-              child: Row(
-                children: [
-                  const Text(
-                    'EVERLASTIMER',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () => windowManager.minimize(),
-                    icon: const Icon(Icons.minimize_rounded, color: Colors.white60, size: 18),
-                  ),
-                  IconButton(
-                    onPressed: () => windowManager.close(),
-                    icon: const Icon(Icons.close_rounded, color: Colors.white60, size: 18),
-                  ),
-                ],
+            const Text(
+              'EVERLASTIMER',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 4,
               ),
             ),
             const SizedBox(height: 12),
