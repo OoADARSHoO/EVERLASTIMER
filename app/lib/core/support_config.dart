@@ -76,7 +76,7 @@ final supportConfigProvider = FutureProvider<SupportConfig>((ref) async {
     return SupportConfig(
       monthlyBudget: budget,
       daysRemainingInBillingCycle: daysRemaining,
-      donateUrl: 'https://example.com/donate', // TODO: replace with real link
+      donateUrl: 'https://ko-fi.com/bitekoi',
       categories: [
         CostCategory(label: 'Cloud Hosting', amount: hosting, icon: Icons.cloud_outlined),
         CostCategory(label: 'Database', amount: database, icon: Icons.shield_outlined),
@@ -93,7 +93,7 @@ final supportConfigProvider = FutureProvider<SupportConfig>((ref) async {
     return SupportConfig(
       monthlyBudget: 60.00,
       daysRemainingInBillingCycle: daysRemaining,
-      donateUrl: 'https://example.com/donate',
+      donateUrl: 'https://ko-fi.com/bitekoi',
       categories: const [
         CostCategory(label: 'Cloud Hosting', amount: 18.20, icon: Icons.cloud_outlined),
         CostCategory(label: 'Database', amount: 9.14, icon: Icons.shield_outlined),
