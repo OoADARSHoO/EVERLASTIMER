@@ -85,7 +85,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path $widgetDir | Out-Null
 
           Copy-Item "app/build/windows/x64/runner/Release/*" $artifactDir -Recurse -Force
-          Copy-Item "widget/bin/Release/net8.0-windows/win-x64/publish/*" $widgetDir -Recurse -Force
+          Copy-Item "widget/bin/Release/net8.0-windows10.0.19041.0/win-x64/publish/*" $widgetDir -Recurse -Force
 
           $zipPath = "Everlastimer-$version-win.zip"
           Compress-Archive -Path "$artifactDir\*" -DestinationPath $zipPath -Force
