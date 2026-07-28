@@ -39,7 +39,7 @@ class AboutTab extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Version 1.0.0',
+                'Version 1.0.4',
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
               ),
               const SizedBox(height: 12),

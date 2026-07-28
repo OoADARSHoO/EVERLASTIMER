@@ -1,9 +1,9 @@
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using EverlastimerWidget.Services;
 
@@ -16,6 +16,7 @@ public partial class MainWindow : Window
 
     private readonly WidgetSettings _settings;
     private readonly DispatcherTimer _timer;
+    private readonly GitHubUpdateService _updateService;
 
     public MainWindow()
     {
@@ -32,12 +33,10 @@ public partial class MainWindow : Window
         _timer.Tick += (_, _) => Refresh();
         _timer.Start();
 
-        Loaded += (_, _) => Refresh();
+        _updateService = new GitHubUpdateService();
+        _updateService.StartPeriodicCheck(TimeSpan.FromHours(6));
 
-        SupabaseService.Instance.SupportStatsChanged += (_, stats) =>
-        {
-            Dispatcher.Invoke(() => ApplySupportStats(stats));
-        };
+        Loaded += (_, _) => Refresh();
     }
 
     private void NormalizeWindowPlacement()
@@ -54,7 +53,7 @@ public partial class MainWindow : Window
             || top + height < workArea.Top - 20
             || top > workArea.Bottom + 20;
 
-        if (isOffScreen || left < workArea.Left || left > workArea.Right - width || top < workArea.Top || top > workArea.Bottom - height)
+        if (isOffScreen || left < workArea.Left || left > workArea.Right - width || top > workArea.Bottom - height)
         {
             left = workArea.Left + Math.Max(0, (workArea.Width - width) / 2);
             top = workArea.Top + Math.Max(0, (workArea.Height - height) / 2);
@@ -77,15 +76,14 @@ public partial class MainWindow : Window
 
         LockMenuItem.IsChecked = _settings.Locked;
         AlwaysOnTopMenuItem.IsChecked = _settings.AlwaysOnTop;
-        PinButton.Content = _settings.Locked ? "\uD83D\uDD12" : "\uD83D\uDCCC"; // lock vs pin glyph
+        PinButton.Content = _settings.Locked ? "\uD83D\uDD12" : "\uD83D\uDCCC";
     }
 
-    private async void Refresh()
+    private void Refresh()
     {
         var yp = YearProgress.FromNow();
 
         PercentRun.Text = yp.PercentComplete.ToString("0.0");
-        YearText.Text = yp.Year.ToString();
         DaysCompletedText.Text = yp.DaysCompleted.ToString();
         DaysRemainingText.Text = yp.DaysRemaining.ToString();
 
@@ -93,36 +91,72 @@ public partial class MainWindow : Window
 
         RingControl.Fraction = yp.Fraction;
 
-        try
-        {
-            var stats = await SupabaseService.Instance.GetSupportStatsAsync();
-            ApplySupportStats(stats);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to fetch support stats: {ex.Message}");
-        }
+        UpdateCalendar();
     }
 
-    private void ApplySupportStats(SupportStats? stats)
+    private void UpdateCalendar()
     {
-        if (stats is null) return;
+        var today = DateTime.Today;
+        MonthYearText.Text = today.ToString("MMMM yyyy");
 
-        SupportBudgetText.Text = stats.Budget?.ToString("N0") ?? "--";
-        SupportRaisedText.Text = stats.Received?.ToString("N0") ?? "--";
-        SupportHostingText.Text = stats.Hosting?.ToString("N0") ?? "--";
-        SupportDatabaseText.Text = stats.Database?.ToString("N0") ?? "--";
-        SupportCdnText.Text = stats.Cdn?.ToString("N0") ?? "--";
-        SupportApisText.Text = stats.Apis?.ToString("N0") ?? "--";
-        SupportOtherText.Text = stats.Other?.ToString("N0") ?? "--";
-        UpdatedText.Text = $"Updated {DateTime.Now:h:mm tt}";
+        var firstDay = new DateTime(today.Year, today.Month, 1);
+        var daysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
+        var startOffset = ((int)firstDay.DayOfWeek + 6) % 7;
+
+        var accentColor = (Color)ColorConverter.ConvertFromString(_settings.AccentColorHex);
+        var textSecondary = (Color)ColorConverter.ConvertFromString("#E6FFFFFF");
+
+        CalendarDaysGrid.Children.Clear();
+
+        var dayCounter = 1;
+        for (var row = 0; row < 6; row++)
+        {
+            for (var col = 0; col < 7; col++)
+            {
+                var cellIndex = row * 7 + col;
+                var container = new Grid();
+
+                if (cellIndex >= startOffset && dayCounter <= daysInMonth)
+                {
+                    var isToday = dayCounter == today.Day;
+
+                    if (isToday)
+                    {
+                        container.Children.Add(new Border
+                        {
+                            Width = 22,
+                            Height = 22,
+                            CornerRadius = new CornerRadius(11),
+                            Background = new SolidColorBrush(accentColor),
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                        });
+                    }
+
+                    container.Children.Add(new TextBlock
+                    {
+                        Text = dayCounter.ToString(),
+                        FontSize = 11,
+                        FontWeight = isToday ? FontWeights.Bold : FontWeights.Normal,
+                        Foreground = new SolidColorBrush(isToday ? Colors.White : textSecondary),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    });
+
+                    dayCounter++;
+                }
+
+                Grid.SetRow(container, row);
+                Grid.SetColumn(container, col);
+                CalendarDaysGrid.Children.Add(container);
+            }
+        }
     }
 
-    // --- Drag to move ---
     private void RootBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (_settings.Locked) return;
-        if (e.OriginalSource is Button) return; // don't drag when clicking header buttons
+        if (e.OriginalSource is Button) return;
 
         if (e.ClickCount == 1)
         {
@@ -145,7 +179,6 @@ public partial class MainWindow : Window
         PersistGeometry();
     }
 
-    // --- Edge Resizing Handlers ---
     private void ResizeLeft_DragDelta(object sender, DragDeltaEventArgs e)
     {
         if (_settings.Locked) return;
@@ -188,7 +221,6 @@ public partial class MainWindow : Window
         }
     }
 
-    // --- Header buttons / menu ---
     private void PinButton_Click(object sender, RoutedEventArgs e)
     {
         _settings.Locked = !_settings.Locked;
@@ -227,6 +259,7 @@ public partial class MainWindow : Window
 
     private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
     {
+        _updateService.Dispose();
         Close();
     }
 }

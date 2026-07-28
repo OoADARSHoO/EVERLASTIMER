@@ -18,25 +18,28 @@ class FloatingWidgetService {
   /// Returns null if none of them exist yet.
   String? get _exePath {
     final exeDir = Directory(File(Platform.resolvedExecutable).parent.path);
+    final sep = Platform.pathSeparator;
 
-    // 1. Dev layout: walk up a few levels looking for a sibling
-    // "EverlastimerWidget" folder containing the published exe.
+    // 1. Dev layout: walk up a few levels looking for a sibling folder
+    // containing the published exe. Check both "widget" and
+    // "EverlastimerWidget" folder names.
     Directory? dir = exeDir;
     for (var i = 0; i < 8 && dir != null; i++) {
-      final candidate = File(
-        '${dir.path}${Platform.pathSeparator}EverlastimerWidget'
-        '${Platform.pathSeparator}bin${Platform.pathSeparator}Release'
-        '${Platform.pathSeparator}net8.0-windows${Platform.pathSeparator}win-x64'
-        '${Platform.pathSeparator}publish${Platform.pathSeparator}EverlastimerWidget.exe',
-      );
-      if (candidate.existsSync()) return candidate.path;
+      for (final folderName in ['widget', 'EverlastimerWidget']) {
+        final candidate = File(
+          '${dir.path}$sep$folderName$sep'
+          'bin${sep}Release${sep}net8.0-windows${sep}win-x64'
+          '${sep}publish${sep}EverlastimerWidget.exe',
+        );
+        if (candidate.existsSync()) return candidate.path;
+      }
       dir = dir.parent;
     }
 
     // 2. Production layout: widget/EverlastimerWidget.exe next to the
     // installed Everlastimer exe.
     final productionCandidate = File(
-      '${exeDir.path}${Platform.pathSeparator}widget${Platform.pathSeparator}EverlastimerWidget.exe',
+      '${exeDir.path}${sep}widget${sep}EverlastimerWidget.exe',
     );
     if (productionCandidate.existsSync()) return productionCandidate.path;
 

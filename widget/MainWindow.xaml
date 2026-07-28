@@ -36,7 +36,7 @@
     <Grid>
         
         <Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Border Width="680" Height="460" CornerRadius="28" Padding="32,28,32,24"
+            <Border Width="680" Height="480" CornerRadius="28" Padding="32,28,32,24"
                     MouseLeftButtonDown="RootBorder_MouseLeftButtonDown">
                 
                 <Border.Background>
@@ -56,7 +56,7 @@
                 <Border.BorderThickness>1</Border.BorderThickness>
                 
                 <Border.Effect>
-                    <DropShadowEffect Color="#000000" BlurRadius="50" ShadowDepth="10" Opacity="0.5"/>
+                    <DropShadowEffect Color="#000000" BlurRadius="50" ShadowDepth="0" Opacity="0.5"/>
                 </Border.Effect>
 
                 <Grid>
@@ -128,12 +128,10 @@
                                 <Grid Width="220" Height="220">
                                     <local:ProgressRing x:Name="RingControl" Width="220" Height="220"/>
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <TextBlock HorizontalAlignment="Center" Margin="0,0,0,-4">
+                                        <TextBlock HorizontalAlignment="Center">
                                             <Run x:Name="PercentRun" Text="50.9" FontSize="48" FontWeight="Bold" Foreground="White"/>
                                             <Run Text="%" FontSize="20" FontWeight="Bold" Foreground="White"/>
                                         </TextBlock>
-                                        <TextBlock Text="of year completed" FontSize="12" HorizontalAlignment="Center"
-                                                   Foreground="{StaticResource TextSecondary}" FontWeight="Medium"/>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -144,105 +142,75 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock x:Name="YearText" Text="2026" FontSize="30" FontWeight="Bold" Foreground="{StaticResource AccentPurple}" Margin="0,0,0,24"/>
+                                <TextBlock x:Name="MonthYearText" Text="July 2026" FontSize="14" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" Margin="0,0,0,8"/>
 
-                                <StackPanel Grid.Row="1">
-                                    <Grid Margin="0,0,0,20">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Border Width="44" Height="44" CornerRadius="12" Background="#0CFFFFFF">
-                                            <TextBlock Text="&#128197;" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8"/>
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
-                                            <TextBlock x:Name="DaysCompletedText" Text="185" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                            <TextBlock Text="days completed" FontSize="12" Foreground="{StaticResource TextSecondary}" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                    </Grid>
+                                <Grid Grid.Row="1" Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="M" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="T" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="W" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="T" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="4" Text="F" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="5" Text="S" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="6" Text="S" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextTertiary}" HorizontalAlignment="Center"/>
+                                </Grid>
 
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Border Width="44" Height="44" CornerRadius="12" Background="#0CFFFFFF">
-                                            <TextBlock Text="&#9203;" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8"/>
-                                        </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
-                                            <TextBlock x:Name="DaysRemainingText" Text="180" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                            <TextBlock Text="days remaining" FontSize="12" Foreground="{StaticResource TextSecondary}" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
+                                <Grid x:Name="CalendarDaysGrid" Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
                             </Grid>
                         </Grid>
 
                         <Border Grid.Row="2" Background="#08FFFFFF" CornerRadius="16"
                                 BorderBrush="#0CFFFFFF" BorderThickness="1" Padding="20,14" Margin="0,0,0,16">
                             <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Margin="0,6,0,6"/>
-                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" Margin="0,6,0,6"/>
-                                <Border Width="1" Background="#FFFFFF" Opacity="0.03" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" Margin="0,6,0,6"/>
+                                <Border Width="1" Background="#FFFFFF" Opacity="0.05" Grid.Column="0" HorizontalAlignment="Right" Margin="0,6,0,6"/>
 
-                                <StackPanel Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="BUDGET" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="SupportBudgetText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="SupportBudgetSuffix" Text="budget" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="DAYS COMPLETED" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="DaysCompletedText" Text="185" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                                    <TextBlock Text="days" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="RAISED" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="SupportRaisedText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="SupportRaisedSuffix" Text="received" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="DAYS REMAINING" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="DaysRemainingText" Text="180" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                                    <TextBlock Text="days" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
                                 </StackPanel>
-
-                                <StackPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="HOSTING" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="SupportHostingText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="SupportHostingSuffix" Text="expense" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="DATABASE" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,0,4" FontWeight="SemiBold"/>
-                                    <TextBlock x:Name="SupportDatabaseText" Text="--" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                                    <TextBlock x:Name="SupportDatabaseSuffix" Text="expense" FontSize="11" Foreground="{StaticResource TextTertiary}" Margin="0,2,0,0"/>
-                                </StackPanel>
-
-                                <Border Grid.Row="1" Grid.ColumnSpan="4" Background="#04FFFFFF" CornerRadius="8" Margin="4,14,4,0" Padding="10,6">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Text="CDN" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,4,0" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="SupportCdnText" Text="--" FontSize="11" Foreground="{StaticResource TextSecondary}" FontWeight="Bold"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Text="APIs" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,4,0" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="SupportApisText" Text="--" FontSize="11" Foreground="{StaticResource TextSecondary}" FontWeight="Bold"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Text="OTHER" FontSize="10" Foreground="{StaticResource TextTertiary}" Margin="0,0,4,0" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="SupportOtherText" Text="--" FontSize="11" Foreground="{StaticResource TextSecondary}" FontWeight="Bold"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
                             </Grid>
                         </Border>
 

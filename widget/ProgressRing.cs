@@ -16,6 +16,26 @@ namespace EverlastimerWidget
             set => SetValue(FractionProperty, value);
         }
 
+        public static readonly DependencyProperty StartColorProperty =
+            DependencyProperty.Register("StartColor", typeof(Color), typeof(ProgressRing),
+                new FrameworkPropertyMetadata((Color)ColorConverter.ConvertFromString("#8B5CF6"), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty EndColorProperty =
+            DependencyProperty.Register("EndColor", typeof(Color), typeof(ProgressRing),
+                new FrameworkPropertyMetadata((Color)ColorConverter.ConvertFromString("#E957FF"), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Color StartColor
+        {
+            get => (Color)GetValue(StartColorProperty);
+            set => SetValue(StartColorProperty, value);
+        }
+
+        public Color EndColor
+        {
+            get => (Color)GetValue(EndColorProperty);
+            set => SetValue(EndColorProperty, value);
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
@@ -58,13 +78,12 @@ namespace EverlastimerWidget
 
             var gradientBrush = new LinearGradientBrush
             {
-                StartPoint = new Point(0, 0),
-                EndPoint = new Point(1, 1),
+                StartPoint = new Point(0, 1),
+                EndPoint = new Point(1, 0),
                 GradientStops = new GradientStopCollection
                 {
-                    new GradientStop((Color)ColorConverter.ConvertFromString("#6A40FF"), 0.0),
-                    new GradientStop((Color)ColorConverter.ConvertFromString("#8C4EFF"), 0.5),
-                    new GradientStop((Color)ColorConverter.ConvertFromString("#F08BFF"), 1.0)
+                    new GradientStop(StartColor, 0.0),
+                    new GradientStop(EndColor, 1.0)
                 }
             };
 

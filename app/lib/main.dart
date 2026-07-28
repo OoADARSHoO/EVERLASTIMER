@@ -10,6 +10,7 @@ import 'features/support/support_screen.dart';
 import 'features/themes_gallery/themes_screen.dart';
 import 'features/widgets_gallery/widgets_screen.dart';
 import 'widgets/app_sidebar.dart' show AppSidebar, sidebarCollapsedProvider;
+import 'widgets/update_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +49,7 @@ class EverlastimerApp extends ConsumerWidget {
         scaffoldBackgroundColor: backgroundColor,
         fontFamily: 'Inter',
       ),
-      home: const AppShell(),
+      home: const UpdateOverlay(child: AppShell()),
     );
   }
 }

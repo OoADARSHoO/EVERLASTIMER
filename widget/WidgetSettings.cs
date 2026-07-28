@@ -12,6 +12,8 @@ public sealed class WidgetSettings
     public double Height { get; set; } = 430;
     public bool Locked { get; set; } = false;
     public bool AlwaysOnTop { get; set; } = true;
+    public string AccentColorHex { get; set; } = "#8B5CF6";
+    public string AccentPartnerHex { get; set; } = "#E957FF";
 
     private static string SettingsDir =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EverlastimerWidget");
