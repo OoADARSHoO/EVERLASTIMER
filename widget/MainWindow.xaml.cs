@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -37,6 +39,7 @@ public partial class MainWindow : Window
         _updateService.StartPeriodicCheck(TimeSpan.FromHours(6));
 
         Loaded += (_, _) => Refresh();
+        Closing += (_, _) => PersistGeometry();
     }
 
     private void NormalizeWindowPlacement()
@@ -48,15 +51,23 @@ public partial class MainWindow : Window
         var left = double.IsNaN(_settings.Left) || double.IsInfinity(_settings.Left) ? 100 : _settings.Left;
         var top = double.IsNaN(_settings.Top) || double.IsInfinity(_settings.Top) ? 100 : _settings.Top;
 
-        var isOffScreen = left + width < workArea.Left - 20
-            || left > workArea.Right + 20
-            || top + height < workArea.Top - 20
-            || top > workArea.Bottom + 20;
+        var centerX = left + width / 2;
+        var centerY = top + height / 2;
+        var isOnAnyScreen = IsPointOnAnyScreen(centerX, centerY);
 
-        if (isOffScreen || left < workArea.Left || left > workArea.Right - width || top > workArea.Bottom - height)
+        if (!isOnAnyScreen)
         {
+            Debug.WriteLine(
+                $"[NormalizeWindowPlacement] Window center ({centerX},{centerY}) " +
+                $"not on any screen — recentering.");
+
             left = workArea.Left + Math.Max(0, (workArea.Width - width) / 2);
             top = workArea.Top + Math.Max(0, (workArea.Height - height) / 2);
+        }
+        else
+        {
+            Debug.WriteLine(
+                $"[NormalizeWindowPlacement] Restoring saved position ({left},{top}) — inside screen bounds.");
         }
 
         _settings.Left = left;
@@ -64,6 +75,25 @@ public partial class MainWindow : Window
         _settings.Width = width;
         _settings.Height = height;
         _settings.Save();
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
+
+    private const uint MONITOR_DEFAULTTONULL = 0;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct POINT
+    {
+        public int X;
+        public int Y;
+        public POINT(double x, double y) { X = (int)x; Y = (int)y; }
+    }
+
+    private static bool IsPointOnAnyScreen(double x, double y)
+    {
+        var pt = new POINT(x, y);
+        return MonitorFromPoint(pt, MONITOR_DEFAULTTONULL) != IntPtr.Zero;
     }
 
     private void ApplySettingsToWindow()
@@ -160,8 +190,14 @@ public partial class MainWindow : Window
 
         if (e.ClickCount == 1)
         {
-            DragMove();
-            PersistGeometry();
+            try
+            {
+                DragMove();
+            }
+            finally
+            {
+                PersistGeometry();
+            }
         }
     }
 
