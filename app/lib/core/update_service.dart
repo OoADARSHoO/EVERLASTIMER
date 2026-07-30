@@ -97,7 +97,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       String? downloadUrl;
       for (final asset in assets) {
         final name = (asset['name'] as String?) ?? '';
-        if (name.toLowerCase().contains('windows') && name.endsWith('.zip')) {
+        if ((name.toLowerCase().contains('windows') || name.toLowerCase().contains('win')) && name.endsWith('.zip')) {
           downloadUrl = asset['browser_download_url'] as String?;
           break;
         }
