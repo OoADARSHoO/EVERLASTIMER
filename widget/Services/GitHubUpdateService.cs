@@ -23,7 +23,7 @@ public sealed class GitHubUpdateService : IDisposable
     /// Should match the version the Flutter app was built with.
     /// Updated manually when a new release is published.
     /// </summary>
-    private const string CurrentVersion = "1.0.7";
+    private const string CurrentVersion = "1.0.8";
 
     private static readonly HttpClient Http = new();
     private Timer? _timer;

@@ -188,26 +188,26 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
       final batContent = '''
 @echo off
-title Everlastimer Updater
-echo Waiting for Everlastimer to close...
 :wait_loop
 tasklist /FI "IMAGENAME eq everlastimer.exe" 2>NUL | find /I "everlastimer.exe" >NUL
 if %ERRORLEVEL% == 0 (
     timeout /t 2 /nobreak >nul
     goto wait_loop
 )
-echo Extracting update...
-powershell -NoProfile -Command "Expand-Archive -Path '${zipPath.replaceAll("'", "''")}' -DestinationPath '${appDir.replaceAll("'", "''")}' -Force"
-echo Relaunching Everlastimer...
+powershell -NoProfile -WindowStyle Hidden -Command "Expand-Archive -Path '${zipPath.replaceAll("'", "''")}' -DestinationPath '${appDir.replaceAll("'", "''")}' -Force"
 start "" "${appDir.replaceAll("'", "''")}\\everlastimer.exe"
-echo Cleaning up...
 rmdir /s /q "${tempDir.path.replaceAll("'", "''")}" 2>nul
 del "%~f0"
 ''';
 
       await File(batPath).writeAsString(batContent);
 
-      await Process.start('cmd', ['/c', batPath],
+      final vbsPath = p.join(tempDir.path, 'update.vbs');
+      final vbsContent = 'Set WshShell = CreateObject("WScript.Shell")\n'
+          'WshShell.Run "cmd /c \\"\\"${batPath.replaceAll("'", "''")}\\"\\"", 0, False\n';
+      await File(vbsPath).writeAsString(vbsContent);
+
+      await Process.start('wscript', [vbsPath],
           mode: ProcessStartMode.detached);
       exit(0);
     } catch (e) {
