@@ -1,26 +1,28 @@
-import 'dart:math' as math;
+import 'dart:math';
 import 'package:flutter/material.dart';
 
-/// A circular progress ring with a gradient stroke and soft outer glow,
-/// matching the Everlastimer home-screen design: a dim full-circle track
-/// with a bright accent-colored arc drawn on top for the completed
-/// fraction.
+/// Glowing circular progress ring — fixes the "split color" seam by using
+/// a SweepGradient whose start and end colors match, and adds a real glow
+/// via layered blurred strokes instead of BoxShadow (which doesn't follow
+/// curved strokes well).
 class ProgressRing extends StatelessWidget {
-  final double progress; // 0.0–1.0
+  final double progress; // 0.0 - 1.0
   final double size;
   final double strokeWidth;
-  final Widget? child;
   final Color startColor;
   final Color endColor;
+  final Color trackColor;
+  final Widget? child;
 
   const ProgressRing({
     super.key,
     required this.progress,
-    this.size = 280,
+    this.size = 260,
     this.strokeWidth = 14,
+    this.startColor = const Color(0xFFB833FF),
+    this.endColor = const Color(0xFFFF3DE8),
+    this.trackColor = const Color(0xFF2A2733),
     this.child,
-    this.startColor = const Color(0xFFB05CFF),
-    this.endColor = const Color(0xFFE957FF),
   });
 
   @override
@@ -29,11 +31,12 @@ class ProgressRing extends StatelessWidget {
       width: size,
       height: size,
       child: CustomPaint(
-        painter: _ProgressRingPainter(
+        painter: _RingPainter(
           progress: progress.clamp(0.0, 1.0),
           strokeWidth: strokeWidth,
-          startColor: startColor,
-          endColor: endColor,
+          colorStart: startColor,
+          colorEnd: endColor,
+          trackColor: trackColor,
         ),
         child: Center(child: child),
       ),
@@ -41,74 +44,98 @@ class ProgressRing extends StatelessWidget {
   }
 }
 
-class _ProgressRingPainter extends CustomPainter {
+class _RingPainter extends CustomPainter {
   final double progress;
   final double strokeWidth;
-  final Color startColor;
-  final Color endColor;
+  final Color colorStart;
+  final Color colorEnd;
+  final Color trackColor;
 
-  _ProgressRingPainter({
+  _RingPainter({
     required this.progress,
     required this.strokeWidth,
-    required this.startColor,
-    required this.endColor,
+    required this.colorStart,
+    required this.colorEnd,
+    required this.trackColor,
   });
 
-  static const _trackColor = Color(0xFF1E1B2E);
+  static const double _startAngle = -pi / 2; // 12 o'clock
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (math.min(size.width, size.height) - strokeWidth) / 2;
+    final center = size.center(Offset.zero);
+    final radius = (min(size.width, size.height) - strokeWidth) / 2;
     final rect = Rect.fromCircle(center: center, radius: radius);
+    final sweepAngle = 2 * pi * progress;
 
-    // Background track — full dim circle drawn as a circle (not arc) to
-    // avoid any seam from overlapping round caps at the 0/2π boundary.
+    // 1. Background track
     final trackPaint = Paint()
-      ..color = _trackColor
+      ..color = trackColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
+      ..strokeCap = StrokeCap.round;
     canvas.drawCircle(center, radius, trackPaint);
 
     if (progress <= 0) return;
 
-    const startAngle = -math.pi / 2; // 12 o'clock
-    final sweepAngle = 2 * math.pi * progress;
+    // Gradient that starts and ends on the SAME hue family so there's no
+    // visible seam where the arc begins/ends. We build a gradient spanning
+    // slightly more than the sweep so the tail always blends into colorEnd.
+    final gradient = SweepGradient(
+      startAngle: 0,
+      endAngle: sweepAngle,
+      transform: GradientRotation(_startAngle),
+      colors: [colorStart, colorEnd],
+      stops: const [0.0, 1.0],
+    );
 
-    // Gradient sweeps from startAngle clockwise for a full circle so the
-    // transition from startColor → endColor lands exactly at [progress].
-    final gradientShader = SweepGradient(
-      center: Alignment.center,
-      startAngle: startAngle,
-      endAngle: startAngle + 2 * math.pi,
-      colors: [startColor, endColor, endColor],
-      stops: [0.0, progress, progress],
-    ).createShader(rect);
+    // 2. Outer soft glow — several blurred passes, widest/faintest first.
+    final glowPasses = [
+      (blur: 24.0, widthMul: 2.6, opacity: 0.20),
+      (blur: 14.0, widthMul: 1.9, opacity: 0.35),
+      (blur: 6.0, widthMul: 1.3, opacity: 0.55),
+    ];
 
-    // Soft glow pass: wider, blurred stroke underneath the sharp arc.
-    final glowPaint = Paint()
-      ..shader = gradientShader
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth * 1.8
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16);
-    canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint);
+    for (final pass in glowPasses) {
+      final glowPaint = Paint()
+        ..shader = gradient.createShader(rect)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth * pass.widthMul
+        ..strokeCap = StrokeCap.round
+        ..color = Colors.white.withValues(alpha: pass.opacity)
+        ..blendMode = BlendMode.plus
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, pass.blur);
+      canvas.drawArc(rect, _startAngle, sweepAngle, false, glowPaint);
+    }
 
-    // Sharp gradient arc on top — round caps on both ends.
-    final arcPaint = Paint()
-      ..shader = gradientShader
+    // 3. Crisp main stroke on top — this is what makes it read as "solid",
+    // not just a blur cloud.
+    final mainPaint = Paint()
+      ..shader = gradient.createShader(rect)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
-    canvas.drawArc(rect, startAngle, sweepAngle, false, arcPaint);
+    canvas.drawArc(rect, _startAngle, sweepAngle, false, mainPaint);
+
+    // 4. Bright leading-edge dot (the little glowing head at the tip).
+    final tipAngle = _startAngle + sweepAngle;
+    final tipCenter = Offset(
+      center.dx + radius * cos(tipAngle),
+      center.dy + radius * sin(tipAngle),
+    );
+    final tipGlow = Paint()
+      ..color = colorEnd.withValues(alpha: 0.9)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+    canvas.drawCircle(tipCenter, strokeWidth * 0.55, tipGlow);
+    canvas.drawCircle(tipCenter, strokeWidth * 0.4, Paint()..color = Colors.white);
   }
 
   @override
-  bool shouldRepaint(covariant _ProgressRingPainter oldDelegate) {
+  bool shouldRepaint(covariant _RingPainter oldDelegate) {
     return oldDelegate.progress != progress ||
         oldDelegate.strokeWidth != strokeWidth ||
-        oldDelegate.startColor != startColor ||
-        oldDelegate.endColor != endColor;
+        oldDelegate.colorStart != colorStart ||
+        oldDelegate.colorEnd != colorEnd ||
+        oldDelegate.trackColor != trackColor;
   }
 }

@@ -268,10 +268,12 @@ class _ThemeTile extends StatelessWidget {
     required this.onTap,
   });
 
+  bool get _isComingSoon => preset != ThemePreset.midnight;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: _isComingSoon ? null : onTap,
       child: SizedBox(
         width: 150,
         child: Column(
@@ -304,6 +306,34 @@ class _ThemeTile extends StatelessWidget {
                         height: 22,
                         decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
                         child: const Icon(Icons.check, size: 14, color: Colors.white),
+                      ),
+                    ),
+                  if (_isComingSoon)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: Colors.black.withValues(alpha: 0.5),
+                        ),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                            ),
+                            child: const Text(
+                              'COMING SOON',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                 ],
