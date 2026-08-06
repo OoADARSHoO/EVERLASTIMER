@@ -1,10 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-/// Glowing circular progress ring — fixes the "split color" seam by using
-/// a SweepGradient whose start and end colors match, and adds a real glow
-/// via layered blurred strokes instead of BoxShadow (which doesn't follow
-/// curved strokes well).
+/// Glowing circular progress ring — uses a diagonal [LinearGradient]
+/// (no angular wrap) for a seamless color transition from [startColor]
+/// to [endColor], with layered blurred strokes for a soft outer glow.
 class ProgressRing extends StatelessWidget {
   final double progress; // 0.0 - 1.0
   final double size;
@@ -78,16 +77,13 @@ class _RingPainter extends CustomPainter {
 
     if (progress <= 0) return;
 
-    // Gradient that starts and ends on the SAME hue family so there's no
-    // visible seam where the arc begins/ends. We build a gradient spanning
-    // slightly more than the sweep so the tail always blends into colorEnd.
-    final gradient = SweepGradient(
-      startAngle: 0,
-      endAngle: sweepAngle,
-      transform: GradientRotation(_startAngle),
+    // LinearGradient across the bounding box — no angular wrap, so a
+    // single drawArc call renders one continuous smooth gradient.
+    final shader = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
       colors: [colorStart, colorEnd],
-      stops: const [0.0, 1.0],
-    );
+    ).createShader(rect);
 
     // 2. Outer soft glow — several blurred passes, widest/faintest first.
     final glowPasses = [
@@ -98,7 +94,7 @@ class _RingPainter extends CustomPainter {
 
     for (final pass in glowPasses) {
       final glowPaint = Paint()
-        ..shader = gradient.createShader(rect)
+        ..shader = shader
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth * pass.widthMul
         ..strokeCap = StrokeCap.round
@@ -108,16 +104,15 @@ class _RingPainter extends CustomPainter {
       canvas.drawArc(rect, _startAngle, sweepAngle, false, glowPaint);
     }
 
-    // 3. Crisp main stroke on top — this is what makes it read as "solid",
-    // not just a blur cloud.
+    // 3. Crisp main stroke on top.
     final mainPaint = Paint()
-      ..shader = gradient.createShader(rect)
+      ..shader = shader
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
     canvas.drawArc(rect, _startAngle, sweepAngle, false, mainPaint);
 
-    // 4. Bright leading-edge dot (the little glowing head at the tip).
+    // 4. Bright leading-edge dot at the tip.
     final tipAngle = _startAngle + sweepAngle;
     final tipCenter = Offset(
       center.dx + radius * cos(tipAngle),

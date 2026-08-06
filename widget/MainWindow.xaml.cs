@@ -51,6 +51,10 @@ public partial class MainWindow : Window
         var left = double.IsNaN(_settings.Left) || double.IsInfinity(_settings.Left) ? 100 : _settings.Left;
         var top = double.IsNaN(_settings.Top) || double.IsInfinity(_settings.Top) ? 100 : _settings.Top;
 
+        // Clamp saved position to work area using the validated dimensions.
+        left = Math.Max(workArea.Left, Math.Min(left, workArea.Right - width));
+        top = Math.Max(workArea.Top, Math.Min(top, workArea.Bottom - height));
+
         var centerX = left + width / 2;
         var centerY = top + height / 2;
         var isOnAnyScreen = IsPointOnAnyScreen(centerX, centerY);
@@ -203,6 +207,7 @@ public partial class MainWindow : Window
 
     private void PersistGeometry()
     {
+        ClampToWorkArea();
         _settings.Left = Left;
         _settings.Top = Top;
         _settings.Width = Width;
@@ -210,8 +215,27 @@ public partial class MainWindow : Window
         _settings.Save();
     }
 
+    /// <summary>
+    /// Clamps the window position so it stays fully inside the current
+    /// monitor's work area. Uses live Width/Height at call time so resize
+    /// followed by drag always produces correct bounds for all four edges.
+    /// </summary>
+    private void ClampToWorkArea()
+    {
+        var workArea = SystemParameters.WorkArea;
+        var w = ActualWidth > 0 ? ActualWidth : Width;
+        var h = ActualHeight > 0 ? ActualHeight : Height;
+
+        var clampedLeft = Math.Max(workArea.Left, Math.Min(Left, workArea.Right - w));
+        var clampedTop = Math.Max(workArea.Top, Math.Min(Top, workArea.Bottom - h));
+
+        Left = clampedLeft;
+        Top = clampedTop;
+    }
+
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
+        ClampToWorkArea();
         PersistGeometry();
     }
 
